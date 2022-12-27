@@ -1,0 +1,110 @@
+[user]
+  name = Alipio de Paula
+  email = alipiodepaula@gmail.com
+
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+
+[color "diff"]
+  meta = 11
+  frag = magenta bold
+  func = 146 bold
+  commit = yellow bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22
+
+[init]
+  defaultBranch = master       # Just keep the master branch for now.
+
+[core]
+  eol   = lf                   # Always use \n, even on Windows.
+  untrackedCache = true        # Speed up commands involving untracked files such as `git status`.
+  pager = diff-so-fancy | less -FR # Good-lookin' diffs
+
+[url "git@github.com:"]        # Prefer git protocol over http for GitHub.
+  insteadOf = https://github.com/
+
+[diff]
+  algorithm  = histogram       # Better quality diffs (but slower).
+  noprefix   = true            # Don't show prefixes in file paths.
+  colorMoved = plain           # Highlight chunks of text that moved unchanged different.
+
+[fetch]
+  prune     = true             # Automatically remove remote tracking refs that no longer exists.
+  pruneTags = true
+
+[grep]
+  lineNumber = true            # Add line and column number.
+  column     = true
+
+[help]
+  autoCorrect = 10             # Automatically correct and execute mistyped commands after 1s.
+
+[log]
+  abbrevCommit = true          # Short commit hashes.
+  follow       = true          # Include commits from before renames.
+
+[merge]
+  stat      = false            # Don't print diffstat after merge.
+  verbosity = 1                # Only show conflicts.
+
+[pull]
+  ff = only                    # Fast-forward instead of merge commits.
+
+[push]
+  default = current            # Update a branch with the same name on the receiving end.
+  followTags = true            # Automatically push annotated tags.
+
+[rebase]
+  autoSquash = true            # Automatically process "fixup!" commits during rebase.
+  autoStash = true             # Automatically stash/unstash uncommitted changes while rebasing.
+
+[status]
+  short              = true    # Always use short CVS-ish output.
+  branch             = true    # Show branch on status.
+  showUntrackedFiles = all     # Show untracked files in untracked dirs too.
+
+[alias]
+  st    = status               # Simple shortcuts.
+  co    = checkout
+  ci    = commit
+  cb    = create-branch
+  nb    = !git cb
+  hack  = !git cb
+  diffh = diff HEAD
+
+  # Show commit logs (medium format is good enough for me).
+  lg = log --pretty=medium
+
+  # Long format, with graph and summary of changes.
+  ll = log --no-decorate --graph --stat-graph-width=30 --stat-count=30
+
+  # Update last commit with staged files without editing the commit message.
+  oops = commit --all --amend --no-edit
+
+  # Edit last commit message.
+  reword = commit --amend
+
+  # Undo last commit.
+  undo = reset HEAD~
+
+  # Discard unstaged changes.
+  discard = checkout --
+
+  # Blow away all local changes.
+  pristine = !git reset --hard HEAD && git clean -df
+
+  # Bring the current branch up to date with master.
+  refresh = pull --rebase origin HEAD
+
+  # Unstage files.
+  unstage = reset HEAD --

@@ -1,0 +1,133 @@
+default partial alphanumeric_keys modifier_keys
+xkb_symbols "basic" {
+    name[Group1] = "English (ARISA)";
+
+    key.type[Group1] = "ONE_LEVEL";
+
+    key <LSGT> { [ ISO_Level5_Shift ] };
+    // key <MENU> { [ Super_R ] };
+    key <AB11> { [ Super_L ] };
+
+    // Main keys
+    // Order of mods (defined by EIGHT_LEVEL_SEMIALPHABETIC) is:
+    // [ None, Shift, Sym, Shift+Sym, Num, Shift+Num, Sym+Num, Shift+Sym+Num ]
+    key.type[Group1] = "EIGHT_LEVEL_SEMIALPHABETIC";
+
+    // Second row
+    key <AD01> { [ q, Q, quotedbl, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD02> { [ w, W, underscore, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD03> { [ e, E, bracketleft, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD04> { [ r, R, bracketright, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD05> { [ t, T, asciicircum, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD06> { [ y, Y, exclam, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD07> {
+        [ u, U, less, 7, Prior, Prior, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<PGUP>), Redirect(key=<PGUP>), NoAction(), NoAction()
+        ]
+    };
+    key <AD08> {
+        [ i, I, greater, 8, Home, Home, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<HOME>), Redirect(key=<HOME>), NoAction(), NoAction()
+        ]
+    };
+    key <AD09> {
+        [ o, O, equal, 9, End, End, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<END>), Redirect(key=<END>), NoAction(), NoAction()
+        ]
+    };
+    key <AD10> { [ p, P, ampersand, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD11> { [ bracketleft, braceleft, dead_acute, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AD12> { [ bracketright, braceright, dead_grave, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+
+    // Home row
+    key <AC01> { [ a, A, slash, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AC02> { [ s, S, minus, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AC03> {
+        [ d, D, braceleft, NoSymbol, Shift_L, Shift_L, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            SetMods(mods=Shift), SetMods(mods=Shift), NoAction(), NoAction()
+        ]
+    };
+    key <AC04> {
+        [ f, F, braceright, NoSymbol, Control_L, Control_L, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            SetMods(mods=Control), SetMods(mods=Shift+Control), NoAction(), NoAction()
+        ]
+    };
+    key <AC05> { [ g, G, asterisk, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AC06> {
+        [ h, H, question, period, Left, Left, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<LEFT>), Redirect(key=<LEFT>), NoAction(), NoAction()
+        ]
+    };
+    key <AC07> {
+        [ j, J, parenleft, 4, Down, Down, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<DOWN>), Redirect(key=<DOWN>), NoAction(), NoAction()
+        ]
+    };
+    key <AC08> {
+        [ k, K, parenright, 5, Up, Up, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<UP>), Redirect(key=<UP>), NoAction(), NoAction()
+        ]
+    };
+    key <AC09> {
+        [ l, L, apostrophe, 6, Right, Right, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<RGHT>), Redirect(key=<RGHT>), NoAction(), NoAction()
+        ]
+    };
+    key <AC10> { [ colon, semicolon, ccedilla, Ccedilla, Delete, Delete, NoSymbol, NoSymbol ] };
+    key <AC11> { [ apostrophe, quotedbl, dead_tilde, dead_circumflex, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+
+
+    // Bottom row
+    key <AB01> { [ z, Z, numbersign, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AB02> { [ x, X, dollar, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AB03> { [ c, C, bar, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AB04> { [ v, V, asciitilde, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AB05> { [ b, B, grave, NoSymbol, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AB06> {
+        [ n, N, plus, 0, Next, Next, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<PGDN>), Redirect(key=<PGDN>), NoAction(), NoAction()
+        ]
+    };
+    key <AB07> {
+        [ m, M, percent, 1, BackSpace, BackSpace, NoSymbol, NoSymbol ]
+    , actions[Group1] =
+        [
+            NoAction(), NoAction(), NoAction(), NoAction(),
+            Redirect(key=<BKSP>, clearmods=LevelFive), Redirect(key=<BKSP>, clearmods=LevelFive), NoAction(), NoAction()
+        ]
+    };
+    key <AB08> { [ comma, less, backslash, 2, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+    key <AB09> { [ period, greater, at, 3, NoSymbol, NoSymbol, NoSymbol, NoSymbol ] };
+
+    include "level5(modifier_mapping)"
+};

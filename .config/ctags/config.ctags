@@ -1,0 +1,15 @@
+--exclude=bower_components
+--exclude=vendor
+--exclude=public
+--exclude=migrate
+--exclude=node_modules
+--exclude=*.json
+--languages=-javascript,sql
+
+--langmap=ruby:+.rake
+--regex-ruby=/^[ \t]*([A-Z][[:alnum:]_]+) *=/\1/C/
+--regex-ruby=/^[ \t]*scope *:([[:alnum:]_]+)/\1/f/
+--regex-ruby=/^[ \t]*(has_many|belongs_to|has_one|has_and_belongs_to_many|has_many_attached|has_one_attached) *:([[:alnum:]_]+)/\2/f/
+--regex-ruby=/^[ \t]*event *:([[:alnum:]_]+)/\1/f/
+--regex-ruby=/^[ \t]*event *:([[:alnum:]_]+)/\1!/f/
+--regex-ruby=/^[ \t]*event *:([[:alnum:]_]+)/\1?/f/

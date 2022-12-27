@@ -1,0 +1,68 @@
+Pry.config.editor = proc { |file, line| "vim +#{line} #{file}" }
+
+Pry.config.ls.heading_color = :cyan
+
+Pry::Prompt.add(
+  :colored, 'Colored version of :default.'
+) do |context, nesting, pry_instance, sep|
+  text = format(
+    "%<name>s(%<context>s)%<nesting>s%<separator>s",
+    name: pry_instance.config.prompt_name,
+    context: Pry.view_clip(context),
+    nesting: (nesting > 0 ? ":#{nesting}" : ''),
+    separator: sep
+  )
+  if pry_instance.config.color
+    text = Pry::Helpers::Text.magenta(text)
+  end
+  "[#{pry_instance.input_ring.count}] #{text} "
+end
+
+Pry.config.prompt = Pry::Prompt[:colored]
+
+begin
+  require 'awesome_print'
+  AwesomePrint.defaults = { indent: 2 }
+  AwesomePrint.pry!
+rescue LoadError
+  puts 'Awesome Print is missing, please install it!'
+end
+
+command_set = Pry::CommandSet.new do
+  block_command 'copy-result', 'Copy result to clipboard' do
+    res = "#{pry_instance.last_result}\n"
+    IO.popen('xclip -sel clipboard', 'w') { |io| io << res }
+  end
+  alias_command 'cr', 'copy-result'
+
+  # Hit Enter to repeat last command.
+  block_command /^$/, 'Repeat last command' do
+    pry_instance.run_command Pry.history.to_a.last
+  end
+end
+Pry.config.commands.import command_set
+
+if defined?(PryByebug)
+  Pry.commands.alias_command 'co', 'continue'
+  Pry.commands.alias_command 'bt', 'backtrace'
+  Pry.commands.alias_command 'si', 'step'   # step into
+  Pry.commands.alias_command 'so', 'next'   # step over
+  Pry.commands.alias_command 'sr', 'finish' # step return
+end
+
+def do_time(repetitions = 100, &block)
+  require 'benchmark'
+  Benchmark.bm { |b| b.report { repetitions.times(&block) } }
+end
+
+class Array
+  def self.toy(n = 10, &block)
+    block ? Array.new(n, &block) : Array.new(n) { |i| i + 1 }
+  end
+end
+
+class Hash
+  def self.toy(n = 10)
+    Array.toy(n).zip(Array.toy(n) { |c| (96 + (c + 1)).chr }).to_h
+  end
+end

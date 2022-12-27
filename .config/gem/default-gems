@@ -1,0 +1,7 @@
+gem-ctags
+bundler
+pry
+pry-byebug
+pry-rescue
+rubocop
+awesome_print

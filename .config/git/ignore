@@ -1,0 +1,20 @@
+*.pyc
+*.sw[nop]
+*~
+.DS_Store
+.bundle
+.byebug_history
+.env
+/log
+/node_modules/
+/tmp
+/vendor
+db/*.sqlite3
+log/*.log
+.ruby-version
+.tool-versions
+.vscode/
+.ignore
+/tags
+
+# vim:set ft=gitignore:

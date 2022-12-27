@@ -1,0 +1,63 @@
+# vim:set ft=zsh:
+
+# Global aliases to pipe output.
+alias -g G='| grep'
+alias -g L='| less'
+
+# Use $XINITRC variable if file exists.
+[ -f "$XINITRC" ] && alias startx="startx $XINITRC"
+
+# sudo not required for some system commands
+for command in mount umount systemctl pacman updatedb su shutdown poweroff reboot ; do
+  alias $command="sudo $command"
+done
+unset command
+
+alias sudo='sudo '
+alias cp='cp -i'                        # Ask for confirmation when overwriting existing files.
+alias mv='mv -i'
+alias ps='ps aux'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ls='ls -FN --color=auto --group-directories-first'
+alias ll='ls -lh --time-style=long-iso'
+alias la='ll -A'
+alias lh='ll -d .*'
+alias lsd='ll -d *(-/DN)'
+alias zzz='systemctl suspend'
+mkcd() { mkdir -p $@ && cd $1 }         # Create directories and cd to first one.
+
+alias sdn='shutdown -h now'
+alias v="$EDITOR"
+alias z='zathura'
+alias cls='clear'
+alias lf='lfub'
+
+alias path='echo $PATH | tr -s ":" "\n"'
+
+alias pbcopy='xclip -in -sel clip'
+alias pbpaste='xclip -out -sel clip'
+alias pbc='pbcopy'
+alias pbp='pbpaste'
+
+alias be='bundle exec'
+alias bi='bundle install'
+alias rc='rails console'
+alias rdm='rake db:migrate db:test:prepare'
+
+alias gaa='git add --all'
+alias gd='git diff'
+alias gdc='git diff --cached'
+alias gst='git st'
+alias gpl='git pull'
+alias gp='git push'
+alias gpf='git push --force-with-lease'
+alias gf='git fetch'
+alias gnb='git nb'
+alias gci='git ci -m'
+alias gco='git co'
+alias gm='git merge'
+alias hack='git hack'
+alias sync='git add -u . && gci "Minor updates" && gpf'

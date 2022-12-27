@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+PATH=/usr/local/bin:"$PATH"
+trap "rm -f tags.$$" EXIT INT TERM
+git ls-files | ctags -L - -f tags.$$ --languages=-javascript,sql
+mv tags.$$ tags

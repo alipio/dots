@@ -1,0 +1,13 @@
+#!/bin/sh
+
+config_xkb() {
+  local XKBDIR; XKBDIR="$HOME/.config/xkb"
+  local XKBMAPFILE; XKBMAPFILE="$XKBDIR/keymap/$(hostname --fqdn)"
+  [ -r "$XKBMAPFILE" ] || XKBMAPFILE="${XKBMAPFILE%/*}/default"
+
+  xkbcomp -w3 -I"$XKBDIR" "$XKBMAPFILE" "${DISPLAY%%.*}"
+}
+
+# This script is called on startup to remap keys.
+xset r rate 250 77
+config_xkb >/dev/null 2>&1

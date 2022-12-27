@@ -1,0 +1,568 @@
+scriptencoding utf-8
+
+set nocompatible                       " Ensure it works with 'vim -u'
+
+" Set/create directory to keep backup, swap, undo files.
+set backupdir=~/.cache/vim/backup// |call mkdir(&backupdir, 'p', 0o700)
+set directory=~/.cache/vim/swap     |call mkdir(&directory, 'p', 0o700)
+set undodir=~/.cache/vim/undo       |call mkdir(&undodir,   'p', 0o700)
+
+" Set viminfo file location unless explicitly turned off.
+if &viminfofile != 'NONE' | set viminfofile=$HOME/.cache/vim/viminfo | endif
+
+let mapleader=" "
+let maplocalleader="\\"
+
+call plug#begin('~/.vim/bundle')
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'preservim/nerdtree'
+
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'mileszs/ack.vim'
+Plug 'Raimondi/delimitMate'
+Plug 'godlygeek/tabular'
+Plug 'maxbrunsfeld/vim-yankstack'
+Plug 'AndrewRadev/splitjoin.vim'
+Plug 'AndrewRadev/sideways.vim'
+Plug 'AndrewRadev/multichange.vim'
+Plug 'AndrewRadev/switch.vim'
+Plug 'tommcdo/vim-exchange'
+Plug 'kana/vim-smartword'
+
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
+
+Plug 'vim-ruby/vim-ruby'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-markdown'
+Plug 'tpope/vim-git'
+Plug 'elixir-lang/vim-elixir'
+Plug 'VebbNix/lf-vim'
+Plug 'ap/vim-css-color'
+
+Plug 'w0rp/ale'
+
+Plug 'SirVer/ultisnips'
+Plug 'pbrisbin/vim-mkdir'
+Plug 'cweagans/vim-taskpaper'
+
+Plug 'morhetz/gruvbox'
+call plug#end()
+
+syntax on                              " Switch syntax highlighting on.
+filetype plugin indent on              " Enable filetype detection.
+
+" General
+set incsearch hlsearch
+set ignorecase
+set smartcase
+set gdefault
+set shortmess=acTOI
+set showcmd
+set sidescroll=4
+set splitbelow splitright
+set ttyfast
+set belloff=all
+set history=500
+set mouse=a
+set tildeop
+
+set complete=.,w,b,k
+set completeopt=menuone,noinsert
+set pumheight=10
+set nojoinspaces
+set formatoptions=croqn
+if has('patch-7.3.541')
+  set formatoptions+=j " Remove comment character when joining lines with J.
+endif
+
+set number
+set ruler
+set nowrap
+set listchars=tab:›\ ,extends:❯,precedes:❮,trail:·
+set laststatus=2
+set signcolumn=number
+
+set statusline=%F\ %M%=%y%w%r%h\ %{&fenc}\ %-10((%l,%c)%)\ %P
+
+set autoread                                                 " Reload files when changed on disk, i.e. via `git checkout`
+set encoding=utf-8                                           " Make sure UTF-8 is used.
+set ffs=unix
+set nobackup nowritebackup noswapfile
+if has('persistent_undo')
+  set undofile
+end
+
+set backspace=2                                              " Fix broken backspace in some setups
+set autoindent
+set expandtab                                                " Expand tabs to spaces
+set smarttab
+set shiftwidth=2                                             " Normal mode indentation commands use 2 spaces
+set softtabstop=-1
+
+set wildmenu
+set wildmode=list:longest,full
+
+set timeoutlen=500
+set ttimeout ttimeoutlen=50
+
+set foldlevelstart=99
+set foldmethod=indent
+
+" Setup color scheme.
+let g:gruvbox_contrast_dark = 'soft'
+let g:gruvbox_italics = 0
+let g:gruvbox_sign_column = 'dark0_soft'
+set background=dark
+silent! colorscheme gruvbox
+
+if exists('$TMUX')  " Support resizing in tmux.
+  set ttymouse=xterm2
+endif
+
+" Load matchit.vim.
+runtime! macros/matchit.vim
+
+" Fix Cursor in tmux.
+if exists('$TMUX')
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+else
+  let &t_SI = "\<Esc>[6 q"
+  let &t_EI = "\<Esc>[2 q"
+endif
+
+if &term =~ "screen" || &term =~ "alacritty"
+  let &t_BE = "\e[?2004h"
+  let &t_BD = "\e[?2004l"
+  exec "set t_PS=\e[200~"
+  exec "set t_PE=\e[201~"
+endif
+
+" Commands
+
+" Toggle settings:
+" https://vim.fandom.com/wiki/Quick_generic_option_toggling
+command! -nargs=+ MapToggle call s:MapToggle(<f-args>)
+function! s:MapToggle(key, opt)
+  let cmd = ':set '.a:opt.'! \| set '.a:opt."?\<CR>"
+  exec 'nnoremap '.a:key.' '.cmd
+endfunction
+
+MapToggle sl list
+MapToggle sh hlsearch
+MapToggle sw wrap
+MapToggle ss spell
+MapToggle sc cursorcolumn
+
+" https://github.com/bjeanes/dot-files/blob/master/vim/vimrc
+" For when you forget to sudo. Really write the file.
+command! SudoWrite call s:SudoWrite()
+function! s:SudoWrite()
+  write !sudo tee % >/dev/null
+  e!
+endfunction
+
+" Rebuild tags database.
+command! RebuildTags call s:RebuildTags()
+function! s:RebuildTags()
+  if exists('g:ctags_exclude_patterns')
+    let excludes = join(map(copy(g:ctags_exclude_patterns), '''--exclude="''.v:val.''"'''), ' ')
+    exe '!ctags -R '.excludes
+  else
+    !ctags -R .
+  endif
+endfunction
+
+" Copy a snippet of code without its initial whitespace.
+command! -range Snip call s:Snip(<line1>, <line2>)
+function! s:Snip(from, to)
+  let lines = getbufline('%', a:from, a:to)
+  let non_empty_lines = filter(copy(lines), {_, l -> l !~ '^\s*$'})
+  let min_whitespace_count = min(map(non_empty_lines, {_, l -> len(matchstr(l, '^\s*'))}))
+
+  if min_whitespace_count > 0
+    let whitespace_pattern = '^'.repeat('\s', min_whitespace_count)
+    call map(lines, {_, l -> substitute(l, whitespace_pattern, '', '')})
+  endif
+
+  let snippet = join(lines, "\n")
+
+  call setreg('"', snippet, 'V')
+  call system('xclip -sel clip', snippet)
+endfunction
+
+" Clean trailing whitespace.
+command! CleanWhitespace call s:CleanWhitespace()
+function! s:CleanWhitespace()
+  let save = winsaveview()
+  keeppattern :%s/\s\+$//e
+  call winrestview(save)
+endfunction
+
+" Autocmds
+
+augroup custom
+  au!
+
+  " Clean all useless whitespace:
+  au BufWritePre *
+    \ if !exists('g:skip_clean_whitespace') && !exists('b:skip_clean_whitespace') |
+    \   exe "CleanWhitespace" |
+    \ endif
+
+  " By default, vim thinks .md is Modula-2.
+  au BufReadPost,BufNewFile *.md set filetype=markdown
+
+  " Automatically rebalance splits on vim resize.
+  au VimResized * :wincmd =
+
+  " Check if the buffer needs to be refreshed from disk (using 'autoread').
+  " Useful when branch-hopping with git.
+  au FocusGained * checktime
+  au WinEnter    * checktime
+
+  " When editing a file, always jump to the last known cursor position unless this is a git commit.
+  au BufReadPost *
+    \ if &ft != 'gitcommit' && line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+augroup END
+
+" Show trailing whitespaces only in insert mode
+augroup trailing
+    au!
+    au InsertEnter * :set listchars-=trail:·
+    au InsertLeave * :set listchars+=trail:·
+augroup END
+
+" Mappings
+
+" Annoying, remove:
+nnoremap s <Nop>
+nnoremap Q <Nop>
+
+" Move to the split in the direction shown, or create a new split.
+nnoremap <silent> <C-h> :call WinMove('h')<CR>
+nnoremap <silent> <C-j> :call WinMove('j')<CR>
+nnoremap <silent> <C-k> :call WinMove('k')<CR>
+nnoremap <silent> <C-l> :call WinMove('l')<CR>
+function! WinMove(key)
+  let t:curwin = winnr()
+  exec "wincmd ".a:key
+  if (t:curwin == winnr())
+    if (match(a:key,'[jk]'))
+      wincmd v
+    else
+      wincmd s
+    endif
+    exec "wincmd ".a:key
+  endif
+endfunction
+
+" Resize windows.
+nnoremap <left>  3<c-w><
+nnoremap <right> 3<c-w>>
+nnoremap <up>    <c-w>-
+nnoremap <down>  <c-w>+
+
+" Delete buffer without closing the window.
+nnoremap <silent> <Leader>q :Bwipeout<CR>
+
+" Copy last yanked text to system clipboard.
+nnoremap <silent> gy :call system('xclip -sel clip', @0)<CR>
+
+" Space+w to write.
+noremap <silent> <leader>w :update!<CR>
+
+" Edit .vimrc more easily.
+noremap <silent> <F6> :sp $MYVIMRC<cr>
+
+" Jump to tag, or display list of multiple results.
+nmap <C-]> g<C-]>
+
+" Paste in insert and command modes.
+" inoremap <C-p> <Esc>pa
+cnoremap <C-p> <C-r>"
+
+" Copy full path of the current file to system clipboard.
+nmap <silent> <leader>cf :let @z=expand("%:p") <bar> call system('xclip -sel clip', @z)<CR>
+
+" Switch between the last two files.
+nnoremap <leader><leader> <C-^>
+
+" Replace all is aliased to S.
+nnoremap S :%s//<Left>
+
+" Completion remappings:
+inoremap <C-j> <C-n>
+inoremap <C-k> <C-p>
+inoremap <C-o> <C-x><C-o>
+inoremap <C-u> <C-x><C-u>
+inoremap <C-f> <C-x><C-f>
+inoremap <C-]> <C-x><C-]>
+inoremap <C-l> <C-x><C-l>
+set completefunc=syntaxcomplete#Complete
+
+" Like "*", but for multiple files.
+nnoremap s* :call <SID>SearchWord(expand('<cword>'))<CR>
+function! s:SearchWord(word)
+  let position = getpos('.')
+  let active_window = winnr()
+
+  exe "Ack '\\b".a:word."\\b'"
+
+  exe active_window.'wincmd w'
+  cclose
+
+  let qflist = getqflist()
+
+  if len(qflist) == 0
+    " nevermind, nothing was found (probably impossible)
+    return
+  endif
+
+  let active_item = qflist[0]
+  let active_index = 0
+
+  if len(qflist) > 1 && position == getpos('.')
+    " this is the place we started from, jump to the next one
+    let active_index = 1
+    silent cnext
+  endif
+
+  echo "Ack: Result ".(active_index + 1)." of ".len(qflist)
+endfunction
+
+" Show last search in quickfix (http://travisjeffery.com/b/2011/10/m-x-occur-for-vim/)
+nmap g/ :vimgrep /<C-R>//j %<CR>\|:cw<CR>
+
+# Indent in visual and select mode automatically re-selects.
+vnoremap > >gv
+vnoremap < <gv
+
+# Make n always search forward, even when started with ?
+nnoremap <expr> n 'Nn'[v:searchforward]
+nnoremap <expr> N 'nN'[v:searchforward]
+
+" Emacs-like mappings.
+inoremap <C-a> <C-o>^
+cnoremap <C-a> <Home>
+
+inoremap <C-b> <Left>
+cnoremap <C-b> <Left>
+
+inoremap <expr> <C-d> col('.')>strlen(getline('.'))?"\<Lt>C-d>":"\<Lt>Del>"
+cnoremap <expr> <C-d> getcmdpos() > strlen(getcmdline()) ? "\<Lt>C-d>" : "\<Lt>Del>"
+
+inoremap <expr> <C-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-e>":"\<Lt>End>"
+
+inoremap <expr> <C-f> col('.')>strlen(getline('.'))?"\<Lt>C-f>":"\<Lt>Right>"
+cnoremap <expr> <C-f> getcmdpos() > strlen(getcmdline()) ? &cedit : "\<Lt>Right>"
+
+function! s:ctrl_u()
+  if getcmdpos() > 1
+    let @- = getcmdline()[:getcmdpos()-2]
+  endif
+  return "\<C-u>"
+endfunction
+
+cnoremap <expr> <C-u> <SID>ctrl_u()
+cnoremap <expr> <C-y> pumvisible() ? "\<C-y>" : "\<C-r>-"
+
+" Close all windows except the current one.
+nnoremap <silent> <leader>o :only<CR>
+
+" Clear search highlighting.
+nnoremap <silent> <C-@> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+
+" CTRL-U in insert mode deletes a lot. Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+inoremap <C-U> <C-G>u<C-U>
+
+" Rename current file
+function! s:RenameFile()
+  let old_name = expand('%')
+  let new_name = input('New file name: ', expand('%'))
+  if new_name != '' && new_name != old_name
+    exec ':saveas ' . new_name
+    exec ':silent !rm ' . old_name
+    redraw!
+  endif
+endfunction
+nnoremap <leader>n :call <SID>RenameFile()<CR>
+
+" Zoom
+function! s:Zoom()
+  if winnr('$') > 1
+    tab split
+  elseif len(filter(map(range(tabpagenr('$')), 'tabpagebuflist(v:val + 1)'),
+        \ 'index(v:val, '.bufnr('').') >= 0')) > 1
+    tabclose
+  endif
+endfunction
+nnoremap <silent> <leader>z :call <SID>Zoom()<CR>
+
+function! ToggleQuickFix()
+  if empty(filter(getwininfo(), 'v:val.quickfix'))
+    copen
+  else
+    cclose
+  endif
+endfunction
+nnoremap <silent> <leader>e :call ToggleQuickFix()<CR>
+
+" Additional text objects:
+" Entire buffer
+xnoremap <silent> ie gg0oG$
+onoremap <silent> ie :<C-U>execute "normal! m`"<Bar>keepjumps normal! ggVG<CR>
+" Inner line
+xnoremap <silent> il <Esc>^vg_
+onoremap <silent> il :<C-U>normal! ^vg_<CR>
+
+" Plugins
+
+" ctrlp.vim
+let g:ctrlp_match_window = 'order:ttb,max:15'
+let g:ctrlp_cmd = 'CtrlPMixed'
+" Don't jump to an existing window when opening a file.
+let g:ctrlp_switch_buffer = 0
+" Respect vim's CWD.
+let g:ctrlp_working_path_mode = 0
+
+" Make CtrlP use ag for listing the files. Way faster and no useless files.
+let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+let g:ctrlp_use_caching = 0
+
+" NERDTree
+let g:NERDTreeQuitOnOpen = 1
+" Don't care about cd-ing to the cwd
+let g:NERDTreeMapCWD = '-'
+let g:NERDTreeIgnore = ['\~$', 'tags']
+" The 's' key is a prefix for a lot of things
+let g:NERDTreeMapOpenVSplit = 'so'
+
+nnoremap <leader>d :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
+
+" Ruby settings
+let g:ruby_path                      = ''
+let g:rubycomplete_rails             = 0
+let g:rubycomplete_buffer_loading    = 1
+let g:rubycomplete_classes_in_global = 1
+let g:ruby_operators                 = 1
+
+" Splitjoin
+let g:splitjoin_split_mapping        = ''
+let g:splitjoin_join_mapping         = ''
+let g:splitjoin_normalize_whitespace = 1
+
+nmap <silent> sj <Plug>SplitjoinSplit
+nmap <silent> sk <Plug>SplitjoinJoin
+
+" ALE
+let g:ale_linters = { 'ruby': ['rubocop'] }
+let g:ale_linters_explicit = 1
+let g:ale_set_highlights = 0
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_enter = 1
+let g:ale_sign_error = '➤'
+let g:ale_sign_warning = '➤'
+
+" Smartword
+nmap w  <Plug>(smartword-w)
+nmap b  <Plug>(smartword-b)
+nmap e  <Plug>(smartword-e)
+nmap ge <Plug>(smartword-ge)
+
+xmap w  <Plug>(smartword-w)
+xmap b  <Plug>(smartword-b)
+xmap e  <Plug>(smartword-e)
+xmap ge <Plug>(smartword-ge)
+
+" ack.vim
+let g:ackprg="ag --vimgrep"
+
+" vim-yankstack
+let g:yankstack_map_keys = 0
+let g:yankstack_yank_keys = ['c', 'C', 'd', 'D', 'x', 'y']
+
+nmap <leader>p <Plug>yankstack_substitute_older_paste
+nmap <leader>P <Plug>yankstack_substitute_newer_paste
+
+call yankstack#setup()
+
+" Yank from the cursor to the end of the line, to be consistent with C and D.
+nmap Y y$
+
+" sideways.vim
+" Moving
+nnoremap s< :SidewaysLeft<CR>
+nnoremap s> :SidewaysRight<CR>
+
+" Argument text object
+omap <silent> aa <Plug>SidewaysArgumentTextobjA
+xmap <silent> aa <Plug>SidewaysArgumentTextobjA
+omap <silent> ia <Plug>SidewaysArgumentTextobjI
+xmap <silent> ia <Plug>SidewaysArgumentTextobjI
+
+" Add new argument
+nmap <leader>si <Plug>SidewaysArgumentInsertBefore
+nmap <leader>sa <Plug>SidewaysArgumentAppendAfter
+nmap <leader>sI <Plug>SidewaysArgumentInsertFirst
+nmap <leader>sA <Plug>SidewaysArgumentAppendLast
+
+" built-in HTML indenting
+let g:html_indent_inctags = 'html,head,body,li,p'
+
+" surround.vim
+xmap s S
+
+" vim-exchange
+let g:exchange_no_mappings = 1
+nmap X <Plug>(Exchange)
+xmap X <Plug>(Exchange)
+
+" Multichange
+let g:multichange_mapping        = 'sm'
+let g:multichange_motion_mapping = 'm'
+let g:multichange_save_position  = 1
+
+" Switch
+nmap - <Plug>(Switch)
+
+" Don't use netrw at all, interferes with "clever" autocommands
+let g:loaded_netrwPlugin = 1
+
+" UltiSnips
+let g:UltiSnipsSnippetDirectories = ['ultisnips']
+let g:UltiSnipsJumpForwardTrigger = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+
+" delimitMate & endwise
+let g:endwise_no_mappings = 1
+let g:delimitMate_expand_space = 0
+imap <expr> <CR> pumvisible() ? "\<C-y>" : "\<Plug>delimitMateCR\<Plug>DiscretionaryEnd"
+
+"TODO: Do we really need this feature?
+" Make sure pasting in visual mode doesn't replace paste buffer.
+function! RestoreRegister()
+  let @" = s:restore_reg
+  return ''
+endfunction
+
+function! s:Repl()
+  let s:restore_reg = @"
+  return "p@=RestoreRegister()\<CR>"
+endfunction
+vmap <silent> <expr> p <SID>Repl()
+
+if filereadable(expand("~/.vim/vimrc.local"))
+  source ~/.vim/vimrc.local
+endif

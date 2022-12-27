@@ -1,0 +1,27 @@
+-- Official docs: http://www.postgresql.org/docs/current/app-psql.html
+-- Unofficial docs: http://robots.thoughtbot.com/improving-the-command-line-postgres-experience
+
+-- Don't display the "helpful" message on startup.
+\set QUIET 1
+\pset null '[NULL]'
+
+-- http://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-PROMPTING
+\set PROMPT1 '%n@%M [%/] %# '
+-- PROMPT2 is printed when the prompt expects more input, like when you type
+-- SELECT * FROM<enter>. %R shows what type of input it expects.
+\set PROMPT2 '%R > '
+
+-- Show how long each query takes to execute.
+\timing
+
+-- Use best available output format.
+\x auto
+
+\set VERBOSITY verbose
+\set HISTFILE ~/.cache/psql_history- :DBNAME
+\set HISTSIZE 10000
+\set HISTCONTROL ignoreboth
+
+\set COMP_KEYWORD_CASE upper
+
+\unset QUIET
