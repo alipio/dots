@@ -342,11 +342,11 @@ endfunction
 " Show last search in quickfix (http://travisjeffery.com/b/2011/10/m-x-occur-for-vim/)
 nmap g/ :vimgrep /<C-R>//j %<CR>\|:cw<CR>
 
-# Indent in visual and select mode automatically re-selects.
+" Indent in visual and select mode automatically re-selects.
 vnoremap > >gv
 vnoremap < <gv
 
-# Make n always search forward, even when started with ?
+" Make n always search forward, even when started with ?
 nnoremap <expr> n 'Nn'[v:searchforward]
 nnoremap <expr> N 'nN'[v:searchforward]
 
