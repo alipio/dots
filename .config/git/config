@@ -26,12 +26,9 @@
   defaultBranch = master       # Just keep the master branch for now.
 
 [core]
-  eol   = lf                   # Always use \n, even on Windows.
+  eol = lf                     # Always use \n, even on Windows.
   untrackedCache = true        # Speed up commands involving untracked files such as `git status`.
   pager = diff-so-fancy | less -FR # Good-lookin' diffs
-
-[url "git@github.com:"]        # Prefer git protocol over http for GitHub.
-  insteadOf = https://github.com/
 
 [diff]
   algorithm  = histogram       # Better quality diffs (but slower).
