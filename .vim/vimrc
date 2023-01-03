@@ -21,7 +21,6 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'mileszs/ack.vim'
 Plug 'Raimondi/delimitMate'
 Plug 'godlygeek/tabular'
-Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'AndrewRadev/sideways.vim'
 Plug 'AndrewRadev/multichange.vim'
@@ -488,15 +487,6 @@ xmap ge <Plug>(smartword-ge)
 
 " ack.vim
 let g:ackprg="ag --vimgrep"
-
-" vim-yankstack
-let g:yankstack_map_keys = 0
-let g:yankstack_yank_keys = ['c', 'C', 'd', 'D', 'x', 'y']
-
-nmap <leader>p <Plug>yankstack_substitute_older_paste
-nmap <leader>P <Plug>yankstack_substitute_newer_paste
-
-call yankstack#setup()
 
 " Yank from the cursor to the end of the line, to be consistent with C and D.
 nmap Y y$
