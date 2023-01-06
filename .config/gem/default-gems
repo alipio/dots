@@ -1,7 +1,6 @@
 gem-ctags
-bundler
-pry
+awesome_print
+gem-browse
 pry-byebug
 pry-rescue
 rubocop
-awesome_print
