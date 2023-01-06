@@ -2,7 +2,7 @@
 
 # This file is sourced in login shells. Environmental variables are set here.
 
-export PATH=$PATH:~/.local/bin
+export PATH="$PATH:${$(find ~/.local/bin -type d -printf %p:)%%:}"
 
 # Default programs.
 export EDITOR='vim'
